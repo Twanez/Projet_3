@@ -17,7 +17,7 @@ public class Defenseur extends Mode {
 
 	protected void finPartie(int nbToursEcoules) {
 		if(jeu.estNbMystere(entree))
-			System.out.println("\n\nL'ordinateur a trouvé le nombre mystère (" + entree + ") en " + nbToursEcoules + "essais.");
+			System.out.println("\n\nL'ordinateur a trouvé le nombre mystère (" + entree + ") en " + nbToursEcoules + " essais.");
 		else
 			System.out.println("\n\nL'ordinateur n'a pas trouvé le nombre mystère. (" + jeu.getNbMystere() + ")");
 	}

@@ -1,5 +1,7 @@
 package fr.projet_3.jeu;
 
+import org.apache.log4j.Logger;
+
 import fr.projet_3.Menu;
 
 /**
@@ -7,6 +9,7 @@ import fr.projet_3.Menu;
  *
  */
 public abstract class Jeu implements Cloneable {
+	private static Logger logger = Logger.getLogger(Menu.class);
 	protected int nbChiffres = Menu.paramNombre(4, "NOMBRE_CHIFFRES");
 	protected String nbMystere;
 	
@@ -16,7 +19,7 @@ public abstract class Jeu implements Cloneable {
 		try {
 			o = super.clone();
 		} catch (CloneNotSupportedException cnse) {
-			cnse.printStackTrace(System.err);
+			logger.fatal("Impossible de cloner une instance de la classe Jeu.");
 		}
 		return o;
 	}

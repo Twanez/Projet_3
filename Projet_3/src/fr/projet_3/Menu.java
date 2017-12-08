@@ -1,15 +1,18 @@
 package fr.projet_3;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.Scanner;
 import fr.projet_3.jeu.*;
 import fr.projet_3.mode.*;
+import org.apache.log4j.Logger;
 
 /**
  * <b>La classe Menu est la classe qui gère et contrôle le choix du jeu et du mode de jeu par l'utilisateur.</b>
  */
 public class Menu {
+	private static Logger logger = Logger.getLogger(Menu.class);
 	private Jeu jeu;
 	private Mode mode;
 	
@@ -106,8 +109,11 @@ public class Menu {
 				if (ligne != null && ligne.substring(0, ligne.indexOf('=')).equals(chaineConfig))
 					nombre = Integer.parseInt(ligne.substring(ligne.indexOf('=') + 1));
 			} while (ligne != null);
+		} catch (StringIndexOutOfBoundsException e){
 		} catch (Exception e) {
-			System.out.println("\nErreur : Fichier config.properties innaccessible ou corrompu.");
+			System.out.print("\n");
+			logger.warn("Fichier config.properties innaccessible ou corrompu.");
+			System.out.print(e.getClass());
 			return nombre;
 		}
 		return nombre;

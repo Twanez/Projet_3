@@ -3,10 +3,8 @@ package fr.projet_3.jeu;
 import fr.projet_3.Menu;
 
 public class Mastermind extends Jeu {
-	int nbCouleurs = Menu.paramNombre(6, "NOMBRE_COULEURS"), minPlaces = nbChiffres, minPresents = nbChiffres;
-	int tabCouleurs[][] = new int[nbCouleurs][2];
-	String propGauche = "", propDroite = "";
-	StringBuffer coulGauche = new StringBuffer(""), coulDroite = new StringBuffer("");
+	int nbCouleurs = Menu.paramNombre(6, "NOMBRE_COULEURS");
+	boolean combinaisons[] = new boolean[ (int) Math.pow(nbCouleurs, nbChiffres) ];
 	
 	@Override
 	public String combinaisonAlea() {
@@ -65,53 +63,6 @@ public class Mastermind extends Jeu {
 			}
 		}
 		
-		if (propDroite != "")
-		{
-			if (coulGauche.indexOf("-") == -1 && coulDroite.indexOf("-") == -1) {
-				
-			} else {
-				int nbTours = propDroite.charAt(0) - '0';
-				minPlaces = Math.min(minPlaces, places);
-				minPresents = Math.min(minPresents, presents);
-				tabCouleurs[nbTours][0] = places;
-				tabCouleurs[nbTours][1] = presents;
-				
-				if (nbTours > nbChiffres/2 && tabCouleurs[0][0] == -1)
-				{
-					tabCouleurs[0][0] = minPlaces;
-					tabCouleurs[0][1] = minPresents;
-					for (int i = 0; i < tabCouleurs[0][0]; i++)
-						coulGauche.setCharAt(coulGauche.indexOf("-"), '0');
-					
-					for (int i = 0; i < tabCouleurs[0][1]; i++)
-						coulDroite.setCharAt(coulDroite.indexOf("-"), '0');
-							
-					for (int i = 1; i <= nbTours; i++)
-					{
-						tabCouleurs[i][0] -= tabCouleurs[0][0];
-						tabCouleurs[i][1] -= tabCouleurs[0][1];
-					}
-					for (int i = 1; i <= nbTours; i++)
-					{
-						for (int j = 0; j < tabCouleurs[i][0]; j++)
-							coulDroite.setCharAt(coulDroite.indexOf("-"), (char) ('0' + i));
-						
-						for (int j = 0; j < tabCouleurs[i][1]; j++)
-							coulGauche.setCharAt(coulGauche.indexOf("-"), (char) ('0' + i));
-					}
-				} else if (nbTours > nbChiffres/2) {
-					tabCouleurs[nbTours][0] -= tabCouleurs[0][0];
-					tabCouleurs[nbTours][1] -= tabCouleurs[0][1];
-					
-					for (int i = 0; i < tabCouleurs[nbTours][0]; i++)
-						coulDroite.setCharAt(coulDroite.indexOf("-"), (char) ('0' + nbTours));
-					
-					for (int i = 0; i < tabCouleurs[nbTours][1]; i++)
-						coulGauche.setCharAt(coulGauche.indexOf("-"), (char) ('0' + nbTours));
-				}
-			}
-		}
-		
 		System.out.print(" -> Réponse : ");
 		switch (presents)
 		{
@@ -139,6 +90,9 @@ public class Mastermind extends Jeu {
 				System.out.print(places + " bien placés");
 				break;
 		}
+		
+		majCombinaison(entree, places, presents);
+		
 		return estNbMystere(entree);
 	}
 
@@ -154,28 +108,72 @@ public class Mastermind extends Jeu {
 
 	@Override
 	public String propositionOrdi() {
-		if (propDroite == "") {
-			tabCouleurs[0][0] = -1;
-			for (int i = 0; i < nbChiffres/2; i++) {
-				propGauche += '0';
-				coulGauche.append('-');
-			}
-			for (int i = nbChiffres/2; i < nbChiffres; i++) {
-				propDroite += '1';
-				coulDroite.append('-');
-			}
-		} else {
-			if (coulGauche.indexOf("-") == -1 && coulDroite.indexOf("-") == -1) {
-				
-			} else {
-				char chiffre = propDroite.charAt(0);
-				propDroite = "";
-				for (int i = nbChiffres/2; i < nbChiffres; i++) {
-					propDroite += (char) (chiffre + 1);
+		int nbCombiPossibles = 0, numProposition, i;
+		for (i = 0; i < combinaisons.length; i++) {
+			if (combinaisons[i])
+				nbCombiPossibles++;
+		}
+		numProposition = (int) ( Math.random() * nbCombiPossibles );
+		for (i = 0; numProposition >= 0; i++) {
+			if (combinaisons[i])
+				numProposition--;
+		}
+		
+		return combinaisonNumero(i - 1);
+	}
+	
+	
+	public void initialisation(String pNbMystere) {
+		super.initialisation(pNbMystere);
+		for (int i = 0; i < combinaisons.length; i++)
+			combinaisons[i] = true;
+	}
+	
+	private void majCombinaison(String entreeOrdi, int pPlaces, int pPresents) {
+		char combi[] = new char[nbChiffres];
+		for (int i = 0; i < Math.pow(nbCouleurs, nbChiffres); i++) {
+			combi = combinaisonNumero(i).toCharArray();
+			int places = 0, presents = 0;
+			for (int j = 0; j < nbChiffres; j++)
+			{
+				if (entreeOrdi.charAt(j) == combi[j])
+				{
+					places++;
+					combi[j] = '\0';
 				}
 			}
+			for (int j = 0; j < nbChiffres; j++)
+			{
+				if (combi[j] != '\0')
+				{
+					int index = indexTab(entreeOrdi.charAt(j), combi);
+					if (index != -1)
+					{
+						presents++;
+						combi[index] = ' ';
+					}
+				}
+			}
+			
+			if (places != pPlaces || presents != pPresents)
+				combinaisons[i] = false;
 		}
-		return propGauche + propDroite;
 	}
+	
+	private String combinaisonNumero(int numero) {
+		return ajouterZeros(Integer.toString(numero, nbCouleurs));
+	}
+	
+	private String ajouterZeros(String nombre)
+	{
+		String chaine = "";
+		for (int i = 0; i < nbChiffres - nombre.length(); i++)
+		{
+			chaine += '0';
+		}
+		return chaine + nombre;
+	}
+	
+	
 
 }

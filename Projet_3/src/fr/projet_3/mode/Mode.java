@@ -1,5 +1,4 @@
 package fr.projet_3.mode;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import fr.projet_3.Menu;
