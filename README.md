@@ -1,16 +1,19 @@
-# Utilisation du programme
+# Compilation du programme
 
 Pour compiler le programme en mode console, placez-vous dans le dossier Projet_3 et exécutez la ligne de commande suivante :
 
 javac -d bin -cp log4j-1.2.17.jar src/fr/projet_3/*.java src/fr/projet_3/*/*.java
 
 
+# Execution du programme
 
 Pour lancer le programme, exécutez la commande suivante dans le même répertoire :
 
 java bin/fr/projet_3/Main
 
 
+
+# Utilisation du programme
 
 Le menu :
 
